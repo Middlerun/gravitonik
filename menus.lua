@@ -103,7 +103,7 @@ function draw_menus()
     else
       love.graphics.setColor(255, 255, 255, 127)
     end
-    love.graphics.print(mm_option[j], cam_n_x[1] + love.graphics.getWidth() / 2 - 110 - cam_x, cam_n_y[1] + love.graphics.getHeight() - 400 + 50 * j - cam_y)
+    love.graphics.print(mm_option[j], cam_n_x[1] + love.graphics.getWidth() / 2 - 100 - cam_x, cam_n_y[1] + love.graphics.getHeight() - 400 + 50 * j - cam_y)
   end
   love.graphics.setColorMode("replace")
   love.graphics.draw(lovelogo, cam_n_x[1] + 20 - cam_x, cam_n_x[1] + love.graphics.getHeight() - 84 - cam_y)
