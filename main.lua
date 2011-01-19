@@ -70,6 +70,7 @@ function love.load()
   fuel = 100
   level_loaded = true
   level_finished = false
+  paused = false
   dead = false
   lev_finish_time = 0
   menu = true
@@ -128,9 +129,6 @@ function love.load()
   part[1] = love.graphics.newImage("gfx/part1.png")
   part[2] = love.graphics.newImage("gfx/part2.png")
   part[3] = love.graphics.newImage("gfx/part3.png")
-
-  --music1 = love.audio.newMusic("sfx/Tergrit_-_Reaching_For_The_Sky.ogg")
-  --love.audio.play(music1)
 
   p_pos_x = {}
   p_pos_y = {}
@@ -223,7 +221,8 @@ function love.update(dt)
   if menu then update_menus(dt)
   else update_level(dt)
   end
-  update_gameplay(dt)
+  if paused == false then update_gameplay(dt)
+  end
 
 end
 
@@ -285,7 +284,12 @@ function love.draw()
     love.graphics.draw(explosion, -cam_x, -cam_y)
 
     love.graphics.setColorMode("replace")
-    if level_finished then
+    if paused then
+      love.graphics.setColor(0, 0, 0, 127)
+      love.graphics.rectangle("fill", -5, -5, love.graphics.getWidth() + 10, love.graphics.getHeight() + 10)
+      love.graphics.setFont(menufont)
+      love.graphics.print("Paused", love.graphics.getWidth() / 2 - 70, 200)
+    elseif level_finished then
       love.graphics.setColor(0, 0, 0, 127)
       love.graphics.rectangle("fill", -5, -5, love.graphics.getWidth() + 10, love.graphics.getHeight() + 10)
       if love.timer.getTime() - lev_finish_time > 1 then
@@ -315,7 +319,7 @@ end
 
 function love.keypressed(k, u)
   if menu and changescreen == false then				-- Process input at menus
-    if menu_screen == 1 then
+    if menu_screen == 1 then				-- Main menu
       if k == "up" then
         mm_selected = mm_selected - 1
         if mm_selected == 0 then mm_selected = mm_options end
@@ -327,7 +331,7 @@ function love.keypressed(k, u)
       elseif k == "escape" then
         love.event.push("q")
       end
-    elseif menu_screen == 2 then
+    elseif menu_screen == 2 then			-- New game screen
       if table.maxn(name_table) < 20 and (u > 64 and u < 91 or u > 96 and u < 123 or u > 47 and u < 59 or u == 45 or u == 95) then
         table.insert(name_table, string.char(u))
       elseif k == "backspace" then
@@ -347,7 +351,7 @@ function love.keypressed(k, u)
         change_menu(1)
       end
       name = table.concat(name_table)
-    elseif menu_screen == 3 then
+    elseif menu_screen == 3 then			-- Load game screen
       if k == "up" then
         lm_selected = lm_selected - 1
         if lm_selected == 0 then lm_selected = lm_options end
@@ -360,7 +364,7 @@ function love.keypressed(k, u)
       elseif k == "escape" then
         change_menu(1)
       end
-    elseif menu_screen == 4 then
+    elseif menu_screen == 4 then			-- Select level screen
       if k == "up" then
         lev_selected = lev_selected - 1
         if lev_selected == 0 then lev_selected = uptolevel end
@@ -375,14 +379,14 @@ function love.keypressed(k, u)
       elseif k == "escape" then
         change_menu(1)
       end
-    elseif menu_screen == 5 then
+    elseif menu_screen == 5 then			-- How to play screen
       if k == " " or k == "return" then
         change_menu(1)
       elseif k == "escape" then
         change_menu(1)
       end
     end
-  elseif level_finished then
+  elseif level_finished then				-- Level finished
     if love.timer.getTime() - lev_finish_time > 1 and (k == " " or k == "return" or k == "escape") then
       init_menu()
       write_savefile(name)
@@ -393,7 +397,7 @@ function love.keypressed(k, u)
       cam_y = cam_n_y[4]
       change_menu(4)
     end
-  elseif dead then
+  elseif dead then					-- Player dead
     if love.timer.getTime() - lev_finish_time > 1 and (k == " " or k == "return" or k == "escape") then
       init_menu()
       menu = true
@@ -403,8 +407,14 @@ function love.keypressed(k, u)
       cam_y = cam_n_y[4]
       change_menu(4)
     end
-  elseif menu == false then
-    if k == "f5" then
+  elseif menu == false then				-- Gameplay
+    if paused then
+      if k == "return" or k == " " or k == "escape" or k == "kpenter" or k == "p" then
+        paused = false
+      end
+    elseif k == "p" then
+      paused = true
+    elseif k == "f5" then
       load_level(thislevel)
     elseif k == "up" then
       if thisplanet ~= 0 then						-- Jump off planet
@@ -437,7 +447,7 @@ function love.keypressed(k, u)
 end
 
 function love.keyreleased(k)
-  if k == "up" then
+  if k == "up" and paused == false then
     jet:stop()
     smoke:stop()
   end

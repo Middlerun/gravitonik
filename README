@@ -15,6 +15,7 @@ Controls:
 Movement:      Left / Right
 Jump/jetpack:  Up
 Stop spinning: Down
+Restart level: F5
 
 
 Requires LÖVE 0.7.0. See http://www.love2d.org for more info. When (if) the

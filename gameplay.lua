@@ -253,7 +253,9 @@ function update_gameplay(dt)
 
   if thispart > numparts and level_finished == false then
     leveltime = love.timer.getTime() - level_start
-    if besttime[thislevel] == 0 then
+    if thislevel == 16 then
+      newpb = false
+    elseif besttime[thislevel] == 0 then
       besttime[thislevel] = leveltime
       newpb = false
     elseif leveltime < besttime[thislevel] then

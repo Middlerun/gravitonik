@@ -10,6 +10,7 @@ function load_level(level)
   level_finished = false
   dead = false
   menu = false
+  paused = false
   thispart = 1
   for i = 1, numplanets, 1 do
     p_mass[i] = 100 * p_density[i] * p_rad[i]^2
