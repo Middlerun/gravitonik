@@ -18,14 +18,13 @@ Stop spinning: Down
 Restart level: F5
 
 
-Requires LÖVE 0.7.0. See http://www.love2d.org for more info. When (if) the
+Requires LÖVE 0.8.0. See http://www.love2d.org for more info. When (if) the
 game is finished I'll release a standalone version.
 
 
 To do:
 ------
 
-- Finish properly updating code for LÖVE 0.7.0
 - Make levels 7, 9 and 15, and finish whatever other levels aren't finished
 - Make random level generator
 - Make "how to play" screen
