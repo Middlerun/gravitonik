@@ -11,7 +11,7 @@ function update_gameplay(dt)
   explosion:update(dt)
   expsmoke:update(dt)
 
-  mt2 = love.timer.getMicroTime()
+  mt2 = love.timer.getTime()
   if level_loaded then
     for i = 1, numplanets, 1 do
       p_oldpos_x[i] = p_pos_x[i]
@@ -134,7 +134,7 @@ function update_gameplay(dt)
         force = (G * p_mass[i] * sm_mass) / dist^2
         dir_x = (p_pos_x[i] - sm_pos_x) / dist
         dir_y = (p_pos_y[i] - sm_pos_y) / dist
-        force_x = force_x + force * dir_x - 0.0002 * sm_v_x 
+        force_x = force_x + force * dir_x - 0.0002 * sm_v_x
         force_y = force_y + force * dir_y - 0.0002 * sm_v_y
       end
     end

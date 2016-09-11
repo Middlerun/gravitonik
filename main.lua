@@ -1,7 +1,7 @@
 love.filesystem.load("menus.lua")()
 love.filesystem.load("gameplay.lua")()
 love.filesystem.load("functions.lua")()
-love.filesystem.load("AnAL.lua")()
+anim8 = require 'anim8/anim8'
 love.filesystem.setIdentity("gravitonik")
 
 function love.load()
@@ -82,7 +82,7 @@ function love.load()
   change_dist = 0
   fuel_planet = {}
   fuel_rel_lat = {}
-  mt1 = love.timer.getMicroTime()
+  mt1 = love.timer.getTime()
   mt2 = mt1
   love.graphics.setBackgroundColor(0,0,0)
 
@@ -108,17 +108,13 @@ function love.load()
   bottle = love.graphics.newImage("gfx/fuelbottle.png")
   arrow = love.graphics.newImage("gfx/arrow.png")
   glow = love.graphics.newImage("gfx/glow.png")
-  windowicon = love.graphics.newImage("gfx/window-icon.png")
-  love.graphics.setIcon(windowicon)
+  windowicon = love.image.newImageData("gfx/window-icon.png")
+  love.window.setIcon(windowicon)
   sms = love.graphics.newImage("gfx/spaceman-stand.png")
   smj = love.graphics.newImage("gfx/spaceman-jump.png")
   smr_img = love.graphics.newImage("gfx/spaceman-run.png")
-  smr = newAnimation(smr_img, 512, 512, 0.05, 4)
-  smr:setDelay(1, 0.15)
-  smr:setDelay(2, 0.05)
-  smr:setDelay(3, 0.15)
-  smr:setDelay(4, 0.05)
-  smr:play()
+  smr_g = anim8.newGrid(512, 512, smr_img:getWidth(), smr_img:getHeight())
+  smr = anim8.newAnimation(smr_g('1-2', '1-2'), {0.15, 0.05, 0.15, 0.05})
 
   planet = {}
   for i = 1, 24, 1 do
@@ -164,8 +160,8 @@ function love.load()
   part1 = love.graphics.newImage("gfx/particle.png")
   jet = love.graphics.newParticleSystem(part1, 1000)
   jet:setEmissionRate(500)
-  jet:setLifetime(-1)
-  jet:setParticleLife(0.1, 0.2)
+  jet:setEmitterLifetime(-1)
+  jet:setParticleLifetime(0.1, 0.2)
   jet:setSpeed(200, 700)
   jet:setSpread(0.2)
   jet:setRadialAcceleration(-20, -10)
@@ -175,8 +171,8 @@ function love.load()
   jet:stop()
   smoke = love.graphics.newParticleSystem(part1, 2000)
   smoke:setEmissionRate(500)
-  smoke:setLifetime(-1)
-  smoke:setParticleLife(1, 3)
+  smoke:setEmitterLifetime(-1)
+  smoke:setParticleLifetime(1, 3)
   smoke:setSpeed(50, 100)
   smoke:setSpread(0.5)
   smoke:setRadialAcceleration(-20, -10)
@@ -186,8 +182,8 @@ function love.load()
   smoke:stop()
   blood = love.graphics.newParticleSystem(part1, 2000)
   blood:setEmissionRate(1000)
-  blood:setLifetime(0.1)
-  blood:setParticleLife(0.5, 1)
+  blood:setEmitterLifetime(0.1)
+  blood:setParticleLifetime(0.5, 1)
   blood:setRadialAcceleration(-20, -10)
   blood:setSizes(0.1, 0.7)
   blood:setSizeVariation(1)
@@ -195,8 +191,8 @@ function love.load()
   blood:stop()
   explosion = love.graphics.newParticleSystem(part1, 2000)
   explosion:setEmissionRate(2000)
-  explosion:setLifetime(0.2)
-  explosion:setParticleLife(0.5, 1.5)
+  explosion:setEmitterLifetime(0.2)
+  explosion:setParticleLifetime(0.5, 1.5)
   explosion:setSpeed(50, 200)
   explosion:setSpread(math.pi)
   explosion:setRadialAcceleration(-20, -10)
@@ -206,8 +202,8 @@ function love.load()
   explosion:stop()
   expsmoke = love.graphics.newParticleSystem(part1, 2000)
   expsmoke:setEmissionRate(500)
-  expsmoke:setLifetime(1)
-  expsmoke:setParticleLife(1.5, 3)
+  expsmoke:setEmitterLifetime(1)
+  expsmoke:setParticleLifetime(1.5, 3)
   expsmoke:setSpeed(50, 100)
   expsmoke:setSpread(math.pi)
   expsmoke:setRadialAcceleration(-20, -10)
@@ -227,18 +223,18 @@ function love.update(dt)
 end
 
 function love.draw()
-  love.graphics.setColorMode("replace")
+  love.graphics.setColor(255, 255, 255)
   drawbg()
 
-  love.graphics.setColorMode("modulate")
+  love.graphics.setColor(255, 255, 255)
   love.graphics.draw(smoke, -cam_x, -cam_y)
   love.graphics.draw(jet, -cam_x, -cam_y)
 
-  love.graphics.setColorMode("replace")
+  love.graphics.setColor(255, 255, 255)
   for j = 1, numplanets, 1 do
     if p_style ~= 0 then love.graphics.draw(planet[p_style[j]], p_pos_x[j] - cam_x, p_pos_y[j] - cam_y, p_ang[j], p_rad[j] / 256, p_rad[j] / 256, 512, 512) end
     if thisplanet == j and dead == false and runspeed ~= 0 then
-      smr:draw(sm_pos_x - cam_x, sm_pos_y - cam_y, sm_ang, 0.125 * sm_orient, 0.125, 256, 256)
+      smr:draw(smr_img, sm_pos_x - cam_x, sm_pos_y - cam_y, sm_ang, 0.125 * sm_orient, 0.125, 256, 256)
     elseif thisplanet == j and dead == false then
       love.graphics.draw(sms, sm_pos_x - cam_x, sm_pos_y - cam_y, sm_ang, 0.125 * sm_orient, 0.125, 256, 256)
     end
@@ -253,7 +249,7 @@ function love.draw()
     draw_menus()
   else
     if thispart > 0 and thispart <= numparts and part_visible[thispart] then
-      love.graphics.setColorMode("replace")
+      love.graphics.setColor(255, 255, 255)
       love.graphics.draw(glow, part_pos_x[thispart] - cam_x, part_pos_y[thispart] - cam_y, 0, 0.18 + 0.02 * math.sin(10 * love.timer.getTime()), 0.18 + 0.02 * math.sin(10 * love.timer.getTime()), 128, 128)
       love.graphics.draw(part[part_style[thispart]], part_pos_x[thispart] - cam_x, part_pos_y[thispart] - cam_y, part_ang[thispart] + p_ang[part_planet[thispart]], 0.125, 0.125, 128, 128)
       if dead == false and part_visible[thispart] then draw_arrow(part_pos_x[thispart], part_pos_y[thispart]) end
@@ -261,13 +257,13 @@ function love.draw()
 
     for i = 1, fuel_bottles, 1 do
       if fuel_remaining[i] then
-      love.graphics.setColorMode("replace")
+      love.graphics.setColor(255, 255, 255)
         love.graphics.draw(glow, fuel_pos_x[i] - cam_x, fuel_pos_y[i] - cam_y, 0, 0.18 + 0.02 * math.sin(10 * love.timer.getTime()), 0.18 + 0.02 * math.sin(10 * love.timer.getTime()), 128, 128)
         love.graphics.draw(bottle, fuel_pos_x[i] - cam_x, fuel_pos_y[i] - cam_y, fuel_ang[i], 0.125, 0.125, 128, 128)
       end
     end
 
-    love.graphics.setColorMode("replace")				-- OSD
+    -- OSD
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.draw(flame, 30, love.graphics.getHeight() - 35, 0, 1, 1, 16, 16)
     love.graphics.line(50, love.graphics.getHeight() - 35, 50, love.graphics.getHeight() - 25)
@@ -277,21 +273,21 @@ function love.draw()
     love.graphics.draw(particon, love.graphics.getWidth() - 80, love.graphics.getHeight() - 35, 0, 1, 1, 16, 16)
     love.graphics.setFont(textfont)
     love.graphics.print(numparts - thispart + 1, love.graphics.getWidth() - 60, love.graphics.getHeight() - 50)
-    
-    love.graphics.setColorMode("modulate")
+
     love.graphics.draw(blood, -cam_x, -cam_y)
     love.graphics.draw(expsmoke, -cam_x, -cam_y)
     love.graphics.draw(explosion, -cam_x, -cam_y)
 
-    love.graphics.setColorMode("replace")
     if paused then
       love.graphics.setColor(0, 0, 0, 127)
       love.graphics.rectangle("fill", -5, -5, love.graphics.getWidth() + 10, love.graphics.getHeight() + 10)
+      love.graphics.setColor(255, 255, 255)
       love.graphics.setFont(menufont)
       love.graphics.print("Paused", love.graphics.getWidth() / 2 - 70, 200)
     elseif level_finished then
       love.graphics.setColor(0, 0, 0, 127)
       love.graphics.rectangle("fill", -5, -5, love.graphics.getWidth() + 10, love.graphics.getHeight() + 10)
+      love.graphics.setColor(255, 255, 255)
       if love.timer.getTime() - lev_finish_time > 1 then
         love.graphics.setFont(menufont)
         love.graphics.print("Level finished", love.graphics.getWidth() / 2 - 130, 200)
@@ -305,6 +301,7 @@ function love.draw()
       love.graphics.setColor(0, 0, 0, 127)
       love.graphics.rectangle("fill", -5, -5, love.graphics.getWidth() + 10, love.graphics.getHeight() + 10)
       if love.timer.getTime() - lev_finish_time > 1 then
+        love.graphics.setColor(255, 255, 255)
         love.graphics.setFont(menufont)
         love.graphics.print("Dead", love.graphics.getWidth() / 2 - 40, 200)
         love.graphics.print("Time: " .. display_time(leveltime), 400, 400)
@@ -312,7 +309,7 @@ function love.draw()
     end
   end
   -- Debug stuff
-  --love.graphics.setColorMode("replace")
+  --love.graphics.setColor(255, 255, 255, 255)
   --love.graphics.setFont(textfont)
   --love.graphics.print("visible", 40, 40)
 end
@@ -329,11 +326,16 @@ function love.keypressed(k, u)
       elseif k == " " or k == "return" then
         change_menu(mm_opt_val[mm_selected])
       elseif k == "escape" then
-        love.event.push("q")
+        love.event.push("quit")
       end
     elseif menu_screen == 2 then			-- New game screen
-      if table.maxn(name_table) < 20 and (u > 64 and u < 91 or u > 96 and u < 123 or u > 47 and u < 59 or u == 45 or u == 95) then
-        table.insert(name_table, string.char(u))
+      if string.match(k, '^[rl]shift$') then
+        return
+      elseif table.maxn(name_table) and string.match(k, '^[a-z0-9%-_]$') then
+        if ((love.keyboard.isDown('lshift') or love.keyboard.isDown('lshift')) and string.match(k, '^[a-z]$')) then
+          k = string.upper(k)
+        end
+        table.insert(name_table, k)
       elseif k == "backspace" then
         table.remove(name_table)
       elseif k == "return" then

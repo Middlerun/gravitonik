@@ -87,16 +87,15 @@ function update_menus(dt)
       end
     end
   else
-    
+
   end
 end
 
 function draw_menus()
   -- (1) Main menu
   love.graphics.draw(title, cam_n_x[1] + love.graphics.getWidth() / 2 - cam_x, cam_n_y[1] + 60 + 120 * love.graphics.getHeight() / 768 - cam_y, 0, 1, 1, 512, 128)
-  love.graphics.setColorMode("replace")
+  love.graphics.setColor(255, 255, 255)
   love.graphics.setFont(menufont)
-  love.graphics.setColorMode("modulate")
   for j = 1, mm_options, 1 do
     if j == mm_selected then
       love.graphics.setColor(255, 255, 255, 255)
@@ -105,7 +104,7 @@ function draw_menus()
     end
     love.graphics.print(mm_option[j], cam_n_x[1] + love.graphics.getWidth() / 2 - 100 - cam_x, cam_n_y[1] + love.graphics.getHeight() - 400 + 50 * j - cam_y)
   end
-  love.graphics.setColorMode("replace")
+  love.graphics.setColor(255, 255, 255)
   love.graphics.draw(lovelogo, cam_n_x[1] + 20 - cam_x, cam_n_x[1] + love.graphics.getHeight() - 84 - cam_y)
   love.graphics.draw(cc, cam_n_x[1] + love.graphics.getWidth() - 100 - cam_x, cam_n_x[1] + love.graphics.getHeight() - 35 - cam_y)
 
@@ -129,7 +128,6 @@ function draw_menus()
   love.graphics.setFont(textfont)
   love.graphics.print("Select user:", cam_n_x[3] + 40 - cam_x, cam_n_y[3] + 200 - cam_y)
   love.graphics.setFont(menufont)
-  love.graphics.setColorMode("modulate")
 
   usrmen_min = math.max(-5, -lm_selected + 1)
   usrmen_max = math.min(5, lm_options - lm_selected)
@@ -141,13 +139,12 @@ function draw_menus()
   end
 
   -- (4) Select level
-  love.graphics.setColorMode("replace")
+  love.graphics.setColor(255, 255, 255)
   love.graphics.setFont(menufont)
   love.graphics.print("Select level", cam_n_x[4] + love.graphics.getWidth() / 2 - 110 - cam_x, cam_n_y[4] + 80 - cam_y)
   love.graphics.setFont(textfont)
   --love.graphics.print("Select user:", cam_n_x[4] + 40 - cam_x, cam_n_y[3] + 200 - cam_y)
   --love.graphics.setFont(menufont)
-  love.graphics.setColorMode("modulate")
 
   levmen_min = math.max(-5, -lev_selected + 1)
   levmen_max = math.min(5, uptolevel - lev_selected)
@@ -160,7 +157,7 @@ function draw_menus()
   end
 
   -- (5) How to play, screen 1
-  love.graphics.setColorMode("replace")
+  love.graphics.setColor(255, 255, 255)
   love.graphics.setFont(menufont)
   love.graphics.print("How to play", cam_n_x[5] + love.graphics.getWidth() / 2 - 110 - cam_x, cam_n_y[5] + 80 - cam_y)
   love.graphics.setFont(textfont)
@@ -174,32 +171,32 @@ function change_menu(screen)
   elseif screen == 3 then
     lm_selected = 1
     lm_option = {}
-    files = love.filesystem.enumerate("save")
+    files = love.filesystem.getDirectoryItems("save")
     for i = 1, table.maxn(files), 1 do
-      filematch = string.match(files[i], "^(.+)\.grvsv\.lua$")
+      filematch = string.match(files[i], "^(.+)%.grvsv%.lua$")
       table.insert(lm_option, filematch)
     end
     lm_options = table.maxn(lm_option)
     lm_selected = 1
   elseif screen == 4 then
     refresh_levels()
-  elseif screen == 6 then love.event.push("q")
+  elseif screen == 6 then love.event.push("quit")
   end
 
   menu_screen = screen
   cam_move_time = love.timer.getTime()
   cam_o_x = cam_x
   cam_o_y = cam_y
-  change_dist = math.sqrt((cam_n_x[menu_screen] - cam_o_x)^2 + (cam_n_x[menu_screen] - cam_o_x)^2)
+  change_dist = math.sqrt((cam_n_x[menu_screen] - cam_o_x)^2 + (cam_n_y[menu_screen] - cam_o_y)^2)
   firsthalf = true
   if change_dist ~= 0 then changescreen = true end
 end
 
 function refresh_saves()
   lm_option = {}
-  files = love.filesystem.enumerate("save")
+  files = love.filesystem.getDirectoryItems("save")
   for i = 1, table.maxn(files), 1 do
-    filematch = string.match(files[i], "^(.+)\.grvsv\.lua$")
+    filematch = string.match(files[i], "^(.+)%.grvsv%.lua$")
     table.insert(lm_option, filematch)
   end
   lm_options = table.maxn(lm_option)

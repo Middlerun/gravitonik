@@ -1,10 +1,10 @@
-                 _____                 _ _              _ _    
-                / ____|               (_) |            (_) |   
+                 _____                 _ _              _ _
+                / ____|               (_) |            (_) |
                | |  __ _ __ __ ___   ___| |_ ___  _ __  _| | __
                | | |_ | '__/ _` \ \ / / | __/ _ \| '_ \| | |/ /
-               | |__| | | | (_| |\ V /| | || (_) | | | | |   < 
+               | |__| | | | (_| |\ V /| | || (_) | | | | |   <
                 \_____|_|  \__,_| \_/ |_|\__\___/|_| |_|_|_|\_\
- 
+
 
 A game by Middlerun
 http://www.middlerun.net
@@ -18,7 +18,7 @@ Stop spinning: Down
 Restart level: F5
 
 
-Requires LÖVE 0.8.0. See http://www.love2d.org for more info. When (if) the
+Built for LÖVE 0.10.1. See http://www.love2d.org for more info. When (if) the
 game is finished I'll release a standalone version.
 
 
@@ -30,6 +30,7 @@ To do:
 - Make "how to play" screen
 - Zoom in/out
 - Music and sound effects
+- Key bindings
 - Mouse control?
 
 
